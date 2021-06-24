@@ -238,8 +238,6 @@ static int swiotlb_test_thread(void *arg)
 		}
 
 		/* Lets pretend we are a device and a bit slow.. */
-		set_current_state(TASK_INTERRUPTIBLE);
-		schedule_timeout_interruptible(1 * HZ);
 		if (!page || *err)
 			break;
 
@@ -315,21 +313,8 @@ static int swiotlb_test_thread(void *arg)
 		__free_pages(page, get_order(PAGE_ALIGN(len)));
 		page = NULL;
 	}
-	while (!kthread_should_stop());
+	while (0);
 
-	/*
-	 * kthread_stop gets unhappy if the thread we are trying
-	 * to stop has already stopped, so lets just park
-	 * ourselves in this loop.
-	 */
-	if (*err) {
-		do {
-
-			set_current_state(TASK_INTERRUPTIBLE);
-			schedule_timeout_interruptible(5 * HZ);
-		}
-		while (!kthread_should_stop());
-	}
 	if (dma_addr)
 		dma_unmap_page(&fake, dma_addr, len, dir);
 	if (page)
@@ -415,8 +400,6 @@ static struct args a[TESTS] = {
 	 }
 };
 
-static struct task_struct *t[TESTS];
-
 static int __init swiotlb_test_init(void)
 {
 	int ret;
@@ -434,30 +417,22 @@ static int __init swiotlb_test_init(void)
 		if (!a[i].name)
 			continue;
 
-		t[i] = kthread_run(swiotlb_test_thread, &a[i], a[i].name);
-	}
+		(void)swiotlb_test_thread(&a[i]);
 
-	return ret;
-}
-
-static void __exit swiotlb_test_exit(void)
-{
-	unsigned int i;
-	int err = 0;
-
-	for (i = 0; i < TESTS; i++)
-		if (t[i])
-			kthread_stop(t[i]);
-
-	for (i = 0; i < TESTS; i++) {
-		err |= a[i].err;
+		ret |= a[i].err;
 		if (a[i].err) {
 			printk("Test %s failed at %d\n", a[i].name, a[i].err);
 		}
 	}
-	printk("Tests %s\n", err ? "FAILED" : "SUCCESS");
+	printk("Tests %s\n", ret ? "FAILED" : "SUCCESS");
 
 	bus_unregister(&fallback_bus_type);
+
+	return ret > 0 ? -EINVAL : ret;
+}
+
+static void __exit swiotlb_test_exit(void)
+{
 }
 
 module_init(swiotlb_test_init);

@@ -31,7 +31,6 @@ clean:
 .PHONY: run
 run:
 	sudo insmod swiotlb_test.ko
-	sleep 5
 	sudo rmmod swiotlb_test
 
 depend .depend dep:
