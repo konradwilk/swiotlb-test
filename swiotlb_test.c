@@ -105,13 +105,14 @@ static int swiotlb_test_thread(void *arg)
 			else
 				mfn = pfn;
 			if (i != 0) {
-				if (prev_mfn + 1 != mfn)
+				if (prev_mfn + 1 != mfn) {
 					dev_warn(&fake,
 						 "va: %lx (pfn:%lx, mfn:%lx) w.r.t prev mfn: %lx!\n",
 						 (unsigned long)addr, pfn, mfn,
 						 prev_mfn);
-				*err = __LINE__;
-				break;
+					*err = __LINE__;
+					break;
+				}
 			}
 			prev_mfn = mfn;
 		}
