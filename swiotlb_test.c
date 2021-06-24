@@ -341,11 +341,11 @@ static int swiotlb_test_thread(void *arg)
 	return *err;
 }
 
-#define TESTS 6
+#define TESTS 10
 static struct args a[TESTS] = {
 	{
-	 .dir = DMA_TO_DEVICE,
 	 .len = 32768,
+	 .dir = DMA_TO_DEVICE,
 	 .offset = 0,
 	 .err = 0,
 	 .name = "32k_to_dev",
@@ -356,6 +356,27 @@ static struct args a[TESTS] = {
 	 .offset = 0,
 	 .err = 0,
 	 .name = "4k_to_dev",
+	 },
+	{
+	 .len = 2048,
+	 .dir = DMA_TO_DEVICE,
+	 .offset = 0,
+	 .err = 0,
+	 .name = "2k_to_dev",
+	 },
+	{
+	 .len = 256,
+	 .dir = DMA_TO_DEVICE,
+	 .offset = 0,
+	 .err = 0,
+	 .name = "256_to_dev",
+	 },
+	{
+	 .len = 256,
+	 .dir = DMA_TO_DEVICE,
+	 .offset = 128,
+	 .err = 0,
+	 .name = "256_to_dev_128_offset",
 	 },
 	{
 	 .len = 16384,
@@ -372,12 +393,19 @@ static struct args a[TESTS] = {
 	 .name = "4k_from_dev",
 	 },
 	{
-	 .len = 256,
-	 .dir = DMA_TO_DEVICE,
-	 .offset = 128,
+	 .len = 2048,
+	 .dir = DMA_FROM_DEVICE,
+	 .offset = 0,
 	 .err = 0,
-	 .name = "256_to_dev_128_offset",
+	 .name = "2k_from_dev",
 	 },
+	{
+	 .len = 256,
+	 .dir = DMA_FROM_DEVICE,
+	 .offset = 0,
+	 .err = 0,
+	 .name = "256_from_dev",
+	},
 	{
 	 .len = 256,
 	 .dir = DMA_FROM_DEVICE,
