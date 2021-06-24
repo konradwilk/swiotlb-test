@@ -326,7 +326,7 @@ static int swiotlb_test_thread(void *arg)
 	return *err;
 }
 
-#define TESTS 10
+#define TESTS 13
 static struct args a[TESTS] = {
 	{
 	 .len = 32768,
@@ -385,11 +385,25 @@ static struct args a[TESTS] = {
 	 .name = "2k_from_dev",
 	 },
 	{
-	 .len = 256,
+	 .len = 2048,
+	 .dir = DMA_FROM_DEVICE,
+	 .offset = 2048,
+	 .err = 0,
+	 .name = "2k_from_dev_2k_offset",
+	},
+	{
+	 .len = 1024,
 	 .dir = DMA_FROM_DEVICE,
 	 .offset = 0,
 	 .err = 0,
-	 .name = "256_from_dev",
+	 .name = "1k_from_dev",
+	},
+	{
+	 .len = 1024,
+	 .dir = DMA_FROM_DEVICE,
+	 .offset = 2048,
+	 .err = 0,
+	 .name = "1k_from_dev_2k_offset",
 	},
 	{
 	 .len = 256,
@@ -397,6 +411,13 @@ static struct args a[TESTS] = {
 	 .offset = 128,
 	 .err = 0,
 	 .name = "256_from_dev_128_offset",
+	 },
+	{
+	 .len = 64,
+	 .dir = DMA_FROM_DEVICE,
+	 .offset = 1024,
+	 .err = 0,
+	 .name = "64_from_dev_1k_offset",
 	 }
 };
 
